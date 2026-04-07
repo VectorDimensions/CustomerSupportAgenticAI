@@ -1,0 +1,36 @@
+# openenv.yaml — OpenEnv environment manifest.
+#
+# This file is the contract between the environment and the OpenEnv platform.
+# The platform reads it to know how to build, run, and connect to the environment.
+#
+# Why a separate YAML file instead of embedding this in pyproject.toml?
+# The OpenEnv SDK expects a well-known filename at the project root. Keeping it
+# separate also means non-Python tooling (Docker build scripts, CI pipelines) can
+# parse environment metadata without understanding Python packaging.
+
+# spec_version identifies which version of the openenv.yaml schema this file uses.
+# Version 1 is the current stable schema for OpenEnv v0.2.x.
+spec_version: 1
+
+# name must match the Python package name (underscores, not hyphens) so the SDK
+# can locate the installed package when running locally without Docker.
+name: support_ticket_env
+
+# type: "environment" tells the platform this is an RL environment server,
+# as opposed to a "model" or "dataset" manifest.
+type: environment
+
+# runtime: "docker" means the platform will build and run the Dockerfile at the
+# project root. The alternative ("local") would run the app directly with Python,
+# but Docker is required for the hackathon submission to ensure reproducibility.
+runtime: docker
+
+# app: the ASGI application object in "module:attribute" notation.
+# "app:app" means the `app` attribute of the `app` module — i.e. the FastAPI
+# instance returned by create_app() and assigned to `app` at module level in
+# server/app.py. Uvicorn uses this string to locate the application.
+app: app:app
+
+# port: the container port that uvicorn listens on. 7860 is the OpenEnv convention
+# (also the default HuggingFace Spaces port), so we follow it for compatibility.
+port: 7860

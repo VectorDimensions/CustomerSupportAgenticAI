@@ -1,0 +1,33 @@
+# Kiro IDE spec files — not needed for contributors
+.kiro/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Pytest cache
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environment variables — never commit tokens
+.env
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Design document (internal only)
+design_document.docx

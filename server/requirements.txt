@@ -1,0 +1,12 @@
+# server/requirements.txt — Server-side dependencies for Docker deployment.
+#
+# Versions are pinned to minor versions (not patch) to get security fixes
+# automatically while avoiding breaking changes from major version bumps.
+# The openai package is included here because inference.py runs inside the
+# container during evaluation.
+
+fastapi>=0.104.0,<1.0.0
+uvicorn[standard]>=0.24.0,<1.0.0
+pydantic>=2.0.0,<3.0.0
+httpx>=0.25.0,<1.0.0
+openai>=1.0.0,<2.0.0

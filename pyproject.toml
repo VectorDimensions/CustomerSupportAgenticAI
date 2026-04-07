@@ -1,0 +1,76 @@
+# pyproject.toml — single source of truth for package metadata and dependencies.
+#
+# Why pyproject.toml instead of setup.py or setup.cfg?
+# PEP 517/518 standardised pyproject.toml as the modern build-system interface.
+# It works with pip, build, and hatch out of the box, and keeps all project
+# configuration in one file rather than scattered across setup.cfg, MANIFEST.in, etc.
+#
+# We use the "hatchling" build backend because it is lightweight, PEP 517-compliant,
+# and requires zero configuration for a simple src-layout package like this one.
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "support-ticket-env"
+version = "0.1.0"
+description = "OpenEnv-compatible RL environment simulating an e-commerce customer support desk"
+readme = "README.md"
+
+# Python 3.11 is the minimum because we rely on:
+#   - tomllib (stdlib, added in 3.11)
+#   - fine-grained type union syntax (X | Y) which landed in 3.10 but is idiomatic in 3.11+
+#   - match statements for clean command dispatch (3.10+)
+requires-python = ">=3.11"
+
+dependencies = [
+    # FastAPI is the HTTP framework for the environment server.
+    # 0.104+ ships with Pydantic v2 support baked in (no compatibility shim needed).
+    "fastapi>=0.104.0",
+
+    # Uvicorn is the ASGI server that runs the FastAPI app.
+    # We pin to 0.24+ for the lifespan context manager API used in create_app().
+    "uvicorn>=0.24.0",
+
+    # Pydantic v2 provides fast JSON serialisation and strict runtime type validation
+    # for SupportTicketAction and SupportTicketObservation. v2 is a breaking change
+    # from v1 — we target v2 exclusively to avoid the compatibility layer overhead.
+    "pydantic>=2.0",
+
+    # httpx is the async-capable HTTP client used by the OpenEnv SDK and our own
+    # SupportTicketEnv client. We need 0.25+ for the httpx.Client context manager API.
+    "httpx>=0.25.0",
+
+    # openai SDK is used by inference.py to call the upstream LLM via API_BASE_URL.
+    # 1.0+ introduced the new client interface (openai.OpenAI()) that we rely on.
+    "openai>=1.0.0",
+
+    # hypothesis is the property-based testing library. 6.0+ is required for the
+    # st.builds() strategy that generates arbitrary Pydantic model instances.
+    "hypothesis>=6.0.0",
+
+    # pytest is the test runner. 7.0+ for the modern fixture and plugin APIs.
+    "pytest>=7.0.0",
+
+    # pytest-asyncio enables async test functions, needed for testing async FastAPI
+    # endpoints and any async client code.
+    "pytest-asyncio>=0.21.0",
+]
+
+[project.urls]
+Repository = "https://github.com/example/support-ticket-env"
+
+# Tell hatchling where the installable package lives.
+# Without this, hatchling would look for a top-level package matching the project name
+# ("support_ticket_env" with underscores), which it will find automatically — but being
+# explicit avoids surprises if the directory structure changes.
+[tool.hatch.build.targets.wheel]
+packages = ["support_ticket_env"]
+
+# pytest configuration lives here to avoid a separate pytest.ini.
+# asyncio_mode = "auto" means every async test function is automatically treated as
+# an asyncio coroutine without needing the @pytest.mark.asyncio decorator on each one.
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
