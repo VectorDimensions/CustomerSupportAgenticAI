@@ -208,13 +208,16 @@ def grade_hard(action_history: list[dict[str, Any]], context: dict[str, Any]) ->
 def grade(task_id: str, action_history: list[dict[str, Any]], context: dict[str, Any]) -> float:
     """Route to the correct grader function based on task_id.
 
+    Scores are clamped to (0.01, 0.99) — strictly between 0 and 1 as required
+    by the OpenEnv hackathon validator. Exactly 0.0 or 1.0 fails validation.
+
     Args:
         task_id: The task name — "easy", "medium", or "hard".
         action_history: List of all actions taken in the episode.
         context: The accumulated episode context dict.
 
     Returns:
-        A float in [0.0, 1.0] representing the agent's final score.
+        A float strictly in (0.01, 0.99).
 
     Raises:
         ValueError: If task_id is not one of the three known task names.
@@ -227,7 +230,9 @@ def grade(task_id: str, action_history: list[dict[str, Any]], context: dict[str,
     grader_fn = graders.get(task_id)
     if grader_fn is None:
         raise ValueError(f"Unknown task_id: {task_id!r}. Valid options are: {list(graders.keys())}")
-    return grader_fn(action_history, context)
+    raw_score = grader_fn(action_history, context)
+    # Clamp strictly between 0 and 1 — validator requires score in (0, 1) exclusive.
+    return max(0.01, min(0.99, raw_score))
 
 
 # ---------------------------------------------------------------------------

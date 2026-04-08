@@ -236,6 +236,43 @@ def create_app(task_id: str | None = None) -> FastAPI:
         return env.get_state()
 
     # ------------------------------------------------------------------
+    # GET /tasks  (required by validator to enumerate tasks)
+    # ------------------------------------------------------------------
+
+    @app.get("/tasks")
+    async def tasks() -> dict[str, Any]:
+        """Return the list of available tasks with metadata.
+
+        The evaluation harness calls this endpoint to discover tasks,
+        then runs each grader and verifies scores are in (0.0, 1.0).
+        """
+        return {
+            "tasks": [
+                {
+                    "id": "easy",
+                    "name": "Order Status Inquiry",
+                    "difficulty": "easy",
+                    "max_steps": 5,
+                    "description": "Customer asks about the status of order ORD-1042",
+                },
+                {
+                    "id": "medium",
+                    "name": "Refund Request",
+                    "difficulty": "medium",
+                    "max_steps": 8,
+                    "description": "Customer wants a refund for damaged item on order ORD-2087",
+                },
+                {
+                    "id": "hard",
+                    "name": "Complex Multi-Issue Resolution",
+                    "difficulty": "hard",
+                    "max_steps": 12,
+                    "description": "Wrong item in ORD-3021 and billing overcharge on ORD-3022",
+                },
+            ]
+        }
+
+    # ------------------------------------------------------------------
     # GET /health  (OpenEnv spec requires status="healthy")
     # ------------------------------------------------------------------
 
