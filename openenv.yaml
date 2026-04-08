@@ -1,36 +1,38 @@
-# openenv.yaml — OpenEnv environment manifest.
-#
-# This file is the contract between the environment and the OpenEnv platform.
-# The platform reads it to know how to build, run, and connect to the environment.
-#
-# Why a separate YAML file instead of embedding this in pyproject.toml?
-# The OpenEnv SDK expects a well-known filename at the project root. Keeping it
-# separate also means non-Python tooling (Docker build scripts, CI pipelines) can
-# parse environment metadata without understanding Python packaging.
-
-# spec_version identifies which version of the openenv.yaml schema this file uses.
-# Version 1 is the current stable schema for OpenEnv v0.2.x.
 spec_version: 1
 name: support_ticket_env
+version: "0.1.0"
+description: >
+  An OpenEnv environment where an AI agent resolves e-commerce customer
+  support tickets by issuing structured commands against an in-memory backend.
+  Tasks range from simple order status inquiries to complex multi-issue resolutions.
+
+author: support-ticket-team
+license: MIT
+tags:
+  - openenv
+  - customer-support
+  - reinforcement-learning
+
 type: environment
 runtime: docker
 app: app:app
 port: 7860
 
 tasks:
-  - id: easy
-    name: Order Status Inquiry
+  - id: 0
+    name: easy
     difficulty: easy
+    description: Order status inquiry for ORD-1042. Agent must look up the order and respond with status and delivery info.
     max_steps: 5
-    description: Customer asks about the status of order ORD-1042
-  - id: medium
-    name: Refund Request
-    difficulty: medium
-    max_steps: 8
-    description: Customer wants a refund for damaged item on order ORD-2087
-  - id: hard
-    name: Complex Multi-Issue Resolution
-    difficulty: hard
-    max_steps: 12
-    description: Wrong item in ORD-3021 and billing overcharge on ORD-3022
 
+  - id: 1
+    name: medium
+    difficulty: medium
+    description: Refund request for damaged item on ORD-2087. Agent must verify order, check policy, issue correct refund.
+    max_steps: 8
+
+  - id: 2
+    name: hard
+    difficulty: hard
+    description: Two issues - wrong item in ORD-3021 and billing overcharge on ORD-3022. Agent must resolve both.
+    max_steps: 12
