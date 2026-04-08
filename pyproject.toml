@@ -53,10 +53,18 @@ dependencies = [
     # pytest is the test runner. 7.0+ for the modern fixture and plugin APIs.
     "pytest>=7.0.0",
 
+    # openenv-core provides the OpenEnv spec base classes and CLI tools.
+    "openenv-core>=0.2.0",
+
     # pytest-asyncio enables async test functions, needed for testing async FastAPI
     # endpoints and any async client code.
     "pytest-asyncio>=0.21.0",
 ]
+
+[project.scripts]
+# Entry point for `openenv serve` and `uv run server` commands.
+# openenv push uses this to start the server inside the container.
+server = "server.app:main"
 
 [project.urls]
 Repository = "https://github.com/example/support-ticket-env"

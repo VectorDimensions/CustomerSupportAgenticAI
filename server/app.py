@@ -236,13 +236,72 @@ def create_app(task_id: str | None = None) -> FastAPI:
         return env.get_state()
 
     # ------------------------------------------------------------------
-    # GET /health
+    # GET /health  (OpenEnv spec requires status="healthy")
     # ------------------------------------------------------------------
 
     @app.get("/health")
     async def health() -> dict[str, str]:
-        """Liveness check — returns {"status": "ok", "task": <current_task>}."""
-        return {"status": "ok", "task": effective_task}
+        """Liveness check — OpenEnv spec requires status='healthy'."""
+        return {"status": "healthy", "task": effective_task}
+
+    # ------------------------------------------------------------------
+    # GET /metadata  (required by openenv validate)
+    # ------------------------------------------------------------------
+
+    @app.get("/metadata")
+    async def metadata() -> dict[str, Any]:
+        """Return environment metadata — name and description required by OpenEnv spec."""
+        return {
+            "name": "support_ticket_env",
+            "description": (
+                "OpenEnv-compatible RL environment simulating an e-commerce customer "
+                "support desk. An AI agent resolves support tickets by issuing structured "
+                "commands against a fully in-memory backend."
+            ),
+            "version": "0.1.0",
+            "tasks": ["easy", "medium", "hard"],
+        }
+
+    # ------------------------------------------------------------------
+    # GET /schema  (required by openenv validate)
+    # ------------------------------------------------------------------
+
+    @app.get("/schema")
+    async def schema() -> dict[str, Any]:
+        """Return action, observation, and state JSON schemas — required by OpenEnv spec."""
+        return {
+            "action": SupportTicketAction.model_json_schema(),
+            "observation": SupportTicketObservation.model_json_schema(),
+            "state": {
+                "type": "object",
+                "properties": {
+                    "episode_id": {"type": "string"},
+                    "step_count": {"type": "integer"},
+                },
+            },
+        }
+
+    # ------------------------------------------------------------------
+    # POST /mcp  (required by openenv validate — JSON-RPC 2.0 endpoint)
+    # ------------------------------------------------------------------
+
+    @app.post("/mcp")
+    async def mcp(request: dict[str, Any] = {}) -> dict[str, Any]:
+        """MCP JSON-RPC 2.0 endpoint — required by OpenEnv spec for tool discovery."""
+        return {
+            "jsonrpc": "2.0",
+            "id": request.get("id", 1),
+            "result": {
+                "tools": [
+                    {"name": cmd, "description": f"Execute {cmd} command"}
+                    for cmd in [
+                        "lookup_order", "lookup_customer", "check_policy",
+                        "check_inventory", "issue_refund", "send_replacement",
+                        "escalate", "send_response",
+                    ]
+                ]
+            },
+        }
 
     return app
 
@@ -253,3 +312,28 @@ def create_app(task_id: str | None = None) -> FastAPI:
 # Entry point for uvicorn: `uvicorn server.app:app`
 # Tests should call create_app() directly to get a fresh isolated instance.
 app = create_app()
+
+
+def main() -> None:
+    """Entry point for `openenv serve` and `uv run server` commands.
+
+    Starts the uvicorn server on host 0.0.0.0 port 7860 (HF Spaces default).
+    All configuration is read from environment variables at startup.
+    """
+    import uvicorn
+    import os
+
+    port = int(os.environ.get("PORT", 7860))
+    host = os.environ.get("HOST", "0.0.0.0")
+    workers = int(os.environ.get("WORKERS", 1))
+
+    uvicorn.run(
+        "server.app:app",
+        host=host,
+        port=port,
+        workers=workers,
+    )
+
+
+if __name__ == "__main__":
+    main()
