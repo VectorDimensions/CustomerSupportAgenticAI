@@ -278,15 +278,12 @@ def run_episode() -> None:
                     flush=True,
                 )
 
-            # Episode is done. Score computation (amendment 3):
-            # Primary: use the grader score embedded in context["score"] — this is
-            # the deterministic weighted-criteria score from graders.py.
-            # Fallback: if the grader score is missing (e.g. episode timed out before
-            # send_response), compute sum(rewards) / MAX_TOTAL_REWARD clamped to [0, 1]
-            # to match the sample script's normalisation pattern.
+            # Score computation — matches sample inference.py pattern exactly.
+            # Primary: grader score from context (deterministic weighted criteria).
+            # Fallback: sum(rewards) / MAX_TOTAL_REWARD clamped to [0, 1].
             grader_score = obs.context.get("score")
             if grader_score is not None:
-                final_score = float(grader_score)
+                final_score = min(max(float(grader_score), 0.0), 1.0)
             else:
                 raw_sum = sum(step_rewards)
                 final_score = max(0.0, min(1.0, raw_sum / MAX_TOTAL_REWARD)) if MAX_TOTAL_REWARD > 0 else 0.0
@@ -303,7 +300,7 @@ def run_episode() -> None:
             rewards_str = ",".join(f"{r:.2f}" for r in step_rewards)
             print(
                 f"[END] success={str(success).lower()} steps={steps_taken} "
-                f"score={final_score:.4f} rewards={rewards_str}",
+                f"score={final_score:.2f} rewards={rewards_str}",
                 flush=True,
             )
 
