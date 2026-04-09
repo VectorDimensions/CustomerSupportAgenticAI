@@ -212,7 +212,7 @@ def grade(task_id: str, action_history: list[dict[str, Any]], context: dict[str,
     by the OpenEnv hackathon validator. Exactly 0.0 or 1.0 fails validation.
 
     Args:
-        task_id: The task name — "easy", "medium", or "hard".
+        task_id: The task name — "easy"/"task_1", "medium"/"task_2", or "hard"/"task_3".
         action_history: List of all actions taken in the episode.
         context: The accumulated episode context dict.
 
@@ -220,12 +220,16 @@ def grade(task_id: str, action_history: list[dict[str, Any]], context: dict[str,
         A float strictly in (0.01, 0.99).
 
     Raises:
-        ValueError: If task_id is not one of the three known task names.
+        ValueError: If task_id is not one of the known task names.
     """
     graders = {
         "easy": grade_easy,
         "medium": grade_medium,
         "hard": grade_hard,
+        # aligned with openenv.yaml and env/registry.py task IDs
+        "task_1": grade_easy,
+        "task_2": grade_medium,
+        "task_3": grade_hard,
     }
     grader_fn = graders.get(task_id)
     if grader_fn is None:
@@ -320,3 +324,17 @@ def _correct_order_of_operations(action_history: list[dict]) -> bool:
     if first_resolution_idx is None or last_lookup_before_resolution_idx is None:
         return False
     return last_lookup_before_resolution_idx < first_resolution_idx
+
+
+# ---------------------------------------------------------------------------
+# GRADERS mapping — aligns with openenv.yaml task IDs and env/registry.py
+# ---------------------------------------------------------------------------
+from env.graders.grader_1 import grader_1
+from env.graders.grader_2 import grader_2
+from env.graders.grader_3 import grader_3
+
+GRADERS = {
+    "task_1": grader_1,
+    "task_2": grader_2,
+    "task_3": grader_3,
+}

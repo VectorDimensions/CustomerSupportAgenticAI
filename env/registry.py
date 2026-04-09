@@ -14,9 +14,9 @@ from env.graders.grader_3 import grader_3
 
 # TASKS is the canonical registry — validator discovers tasks+graders from here
 TASKS = [
-    {"task": task_1, "grader": grader_1},
-    {"task": task_2, "grader": grader_2},
-    {"task": task_3, "grader": grader_3},
+    {"id": "task_1", "task": task_1, "grader": grader_1},
+    {"id": "task_2", "task": task_2, "grader": grader_2},
+    {"id": "task_3", "task": task_3, "grader": grader_3},
 ]
 
 __all__ = ["TASKS"]
