@@ -2,7 +2,7 @@
 
 def task_1():
     return {
-        "id": "task_1",
+        "id": "easy",
         "name": "Order Status Inquiry",
         "difficulty": "easy",
         "max_steps": 5,

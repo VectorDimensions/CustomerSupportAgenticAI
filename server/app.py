@@ -65,7 +65,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
         return {
             "tasks": [
                 {
-                    "id": "task_1",
+                    "id": "easy",
                     "name": "Order Status Inquiry",
                     "difficulty": "easy",
                     "max_steps": 5,
@@ -74,7 +74,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
                     "grader": {"type": "function", "module": "env.graders.grader_1", "function": "grader_1"},
                 },
                 {
-                    "id": "task_2",
+                    "id": "medium",
                     "name": "Refund Request",
                     "difficulty": "medium",
                     "max_steps": 8,
@@ -83,7 +83,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
                     "grader": {"type": "function", "module": "env.graders.grader_2", "function": "grader_2"},
                 },
                 {
-                    "id": "task_3",
+                    "id": "hard",
                     "name": "Complex Multi-Issue Resolution",
                     "difficulty": "hard",
                     "max_steps": 12,
@@ -100,7 +100,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
             "name": "support_ticket_env",
             "description": "OpenEnv-compatible RL environment simulating an e-commerce customer support desk.",
             "version": "0.1.0",
-            "tasks": ["task_1", "task_2", "task_3"],
+            "tasks": ["easy", "medium", "hard"],
         }
 
     @app.get("/schema")
