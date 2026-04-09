@@ -300,7 +300,7 @@ def run_episode() -> None:
             rewards_str = ",".join(f"{r:.2f}" for r in step_rewards)
             print(
                 f"[END] success={str(success).lower()} steps={steps_taken} "
-                f"score={final_score:.2f} rewards={rewards_str}",
+                f"score={final_score:.3f} rewards={rewards_str}",
                 flush=True,
             )
 
