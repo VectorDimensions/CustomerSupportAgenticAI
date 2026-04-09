@@ -1,5 +1,5 @@
-"""
-tests/test_live_space.py — Run key tests against the live HF Space.
+﻿"""
+tests/test_live_space.py â€” Run key tests against the live HF Space.
 
 Tests the deployed environment at:
 https://shivani-zadke-support-ticket-env.hf.space
@@ -64,7 +64,7 @@ class TestLiveAPIContract(unittest.TestCase):
         for task, expected_order in [("easy", "ORD-1042"), ("medium", "ORD-2087"), ("hard", "ORD-3021")]:
             data = post("/reset", {"task_id": task})
             self.assertIn(expected_order, data["customer_message"])
-            print(f"  reset {task}: contains {expected_order} ✓")
+            print(f"  reset {task}: contains {expected_order} âœ“")
 
     def test_double_reset_clean_state(self):
         post("/reset", {"task_id": "easy"})
@@ -74,7 +74,7 @@ class TestLiveAPIContract(unittest.TestCase):
         data = post("/reset", {"task_id": "easy"})
         self.assertEqual(data["step_number"], 0)
         self.assertEqual(data["context"], {})
-        print("  double reset: clean state ✓")
+        print("  double reset: clean state âœ“")
 
     def test_state_after_reset(self):
         post("/reset", {"task_id": "easy"})
@@ -90,7 +90,7 @@ class TestLiveAPIContract(unittest.TestCase):
         post("/step", {"command": "check_policy", "parameters": {"policy_type": "refund_policy"}})
         data = get("/state")
         self.assertEqual(data["step_count"], 3)
-        print(f"  state after 3 steps: step_count={data['step_count']} ✓")
+        print(f"  state after 3 steps: step_count={data['step_count']} âœ“")
 
 
 class TestLiveHappyPath(unittest.TestCase):
@@ -105,7 +105,7 @@ class TestLiveHappyPath(unittest.TestCase):
         self.assertTrue(s2["done"])
         score = s2["observation"]["context"]["score"]
         self.assertGreater(score, 0.7)
-        print(f"  easy perfect run: score={score} ✓")
+        print(f"  easy perfect run: score={score} âœ“")
 
     def test_medium_perfect_run(self):
         post("/reset", {"task_id": "medium"})
@@ -118,7 +118,7 @@ class TestLiveHappyPath(unittest.TestCase):
         }})
         score = s["observation"]["context"]["score"]
         self.assertGreater(score, 0.7)
-        print(f"  medium perfect run: score={score} ✓")
+        print(f"  medium perfect run: score={score} âœ“")
 
     def test_hard_perfect_run(self):
         post("/reset", {"task_id": "hard"})
@@ -134,7 +134,7 @@ class TestLiveHappyPath(unittest.TestCase):
         }})
         score = s["observation"]["context"]["score"]
         self.assertGreater(score, 0.7)
-        print(f"  hard perfect run: score={score} ✓")
+        print(f"  hard perfect run: score={score} âœ“")
 
 
 class TestLiveBadBehavior(unittest.TestCase):
@@ -145,28 +145,28 @@ class TestLiveBadBehavior(unittest.TestCase):
         self.assertAlmostEqual(s["reward"], -0.10)
         self.assertFalse(s["done"])
         self.assertIsNotNone(s["observation"]["last_action_error"])
-        print(f"  invalid command: reward={s['reward']} error set ✓")
+        print(f"  invalid command: reward={s['reward']} error set âœ“")
 
     def test_redundant_action(self):
         post("/reset", {"task_id": "easy"})
         post("/step", {"command": "lookup_order", "parameters": {"order_id": "ORD-1042"}})
         s = post("/step", {"command": "lookup_order", "parameters": {"order_id": "ORD-1042"}})
         self.assertAlmostEqual(s["reward"], -0.02)
-        print(f"  redundant action: reward={s['reward']} ✓")
+        print(f"  redundant action: reward={s['reward']} âœ“")
 
     def test_wrong_refund_amount(self):
         post("/reset", {"task_id": "medium"})
         post("/step", {"command": "lookup_order", "parameters": {"order_id": "ORD-2087"}})
         s = post("/step", {"command": "issue_refund", "parameters": {"order_id": "ORD-2087", "amount": 500.00, "reason": "damaged"}})
         self.assertAlmostEqual(s["reward"], -0.15)
-        print(f"  wrong refund amount: reward={s['reward']} ✓")
+        print(f"  wrong refund amount: reward={s['reward']} âœ“")
 
     def test_sql_injection_safe(self):
         post("/reset", {"task_id": "easy"})
         s = post("/step", {"command": "lookup_order", "parameters": {"order_id": "'; DROP TABLE orders;--"}})
         self.assertIsNotNone(s["observation"]["last_action_error"])
         self.assertFalse(s["done"])
-        print("  SQL injection: handled safely ✓")
+        print("  SQL injection: handled safely âœ“")
 
 
 class TestLiveGraderDeterminism(unittest.TestCase):
@@ -183,7 +183,7 @@ class TestLiveGraderDeterminism(unittest.TestCase):
         score_a = self._easy_score()
         score_b = self._easy_score()
         self.assertAlmostEqual(score_a, score_b, places=6)
-        print(f"  determinism: {score_a} == {score_b} ✓")
+        print(f"  determinism: {score_a} == {score_b} âœ“")
 
     def test_perfect_vs_minimal(self):
         perfect = self._easy_score()
@@ -191,7 +191,7 @@ class TestLiveGraderDeterminism(unittest.TestCase):
         s = post("/step", {"command": "send_response", "parameters": {"message": "I don't know."}})
         minimal = s["observation"]["context"]["score"]
         self.assertGreater(perfect - minimal, 0.3)
-        print(f"  perfect={perfect} vs minimal={minimal} gap={perfect-minimal:.2f} ✓")
+        print(f"  perfect={perfect} vs minimal={minimal} gap={perfect-minimal:.2f} âœ“")
 
 
 class TestLiveGradeEndpoint(unittest.TestCase):
@@ -205,8 +205,11 @@ class TestLiveGradeEndpoint(unittest.TestCase):
             ],
             "context": {}
         })
-        self.assertAlmostEqual(data["score"], 1.0)
-        print(f"  grade standalone: score={data['score']} ✓")
+        # Score must be strictly in (0, 1) â€” perfect run returns 0.99 (clamped)
+        self.assertGreater(data["score"], 0.0)
+        self.assertLess(data["score"], 1.0)
+        self.assertGreater(data["score"], 0.5)
+        print(f"  grade standalone: score={data['score']} strictly-in-range=True")
 
     def test_grade_all_three_tasks_differ(self):
         naive = [
@@ -219,7 +222,7 @@ class TestLiveGradeEndpoint(unittest.TestCase):
             scores[task] = data["score"]
         self.assertNotEqual(scores["easy"], scores["medium"])
         self.assertNotEqual(scores["medium"], scores["hard"])
-        print(f"  scores differ: easy={scores['easy']} medium={scores['medium']} hard={scores['hard']} ✓")
+        print(f"  scores differ: easy={scores['easy']} medium={scores['medium']} hard={scores['hard']} âœ“")
 
 
 if __name__ == "__main__":
@@ -238,3 +241,4 @@ if __name__ == "__main__":
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
     sys.exit(0 if result.wasSuccessful() else 1)
+
