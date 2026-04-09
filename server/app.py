@@ -71,6 +71,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
                     "max_steps": 5,
                     "description": "Customer asks about the status of order ORD-1042",
                     "has_grader": True,
+                    "grader": {"type": "function", "module": "env.graders.grader_1", "function": "grader_1"},
                 },
                 {
                     "id": "medium",
@@ -79,6 +80,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
                     "max_steps": 8,
                     "description": "Customer wants a refund for damaged item on order ORD-2087",
                     "has_grader": True,
+                    "grader": {"type": "function", "module": "env.graders.grader_2", "function": "grader_2"},
                 },
                 {
                     "id": "hard",
@@ -87,6 +89,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
                     "max_steps": 12,
                     "description": "Wrong item in ORD-3021 and billing overcharge on ORD-3022",
                     "has_grader": True,
+                    "grader": {"type": "function", "module": "env.graders.grader_3", "function": "grader_3"},
                 },
             ]
         }
