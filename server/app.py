@@ -65,7 +65,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
         return {
             "tasks": [
                 {
-                    "id": "easy",
+                    "id": "task_1",
                     "name": "Order Status Inquiry",
                     "difficulty": "easy",
                     "max_steps": 5,
@@ -74,7 +74,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
                     "grader": {"type": "function", "module": "env.graders.grader_1", "function": "grader_1"},
                 },
                 {
-                    "id": "medium",
+                    "id": "task_2",
                     "name": "Refund Request",
                     "difficulty": "medium",
                     "max_steps": 8,
@@ -83,7 +83,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
                     "grader": {"type": "function", "module": "env.graders.grader_2", "function": "grader_2"},
                 },
                 {
-                    "id": "hard",
+                    "id": "task_3",
                     "name": "Complex Multi-Issue Resolution",
                     "difficulty": "hard",
                     "max_steps": 12,
@@ -100,7 +100,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
             "name": "support_ticket_env",
             "description": "OpenEnv-compatible RL environment simulating an e-commerce customer support desk.",
             "version": "0.1.0",
-            "tasks": ["easy", "medium", "hard"],
+            "tasks": ["task_1", "task_2", "task_3"],
         }
 
     @app.get("/schema")
@@ -121,8 +121,13 @@ def create_app(task_id: str | None = None) -> FastAPI:
 
     @app.post("/reset")
     async def reset(request: ResetRequest = ResetRequest()) -> dict[str, Any]:
+        # Map openenv.yaml task IDs (task_1/2/3) to runtime IDs (easy/medium/hard)
+        _task_id_map = {"task_1": "easy", "task_2": "medium", "task_3": "hard"}
+        task_id = request.task_id
+        if task_id in _task_id_map:
+            task_id = _task_id_map[task_id]
         try:
-            obs = env.reset(task_id=request.task_id)
+            obs = env.reset(task_id=task_id)
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
         return obs.model_dump()
