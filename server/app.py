@@ -65,31 +65,31 @@ def create_app(task_id: str | None = None) -> FastAPI:
         return {
             "tasks": [
                 {
-                    "id": "easy",
+                    "id": "task_1",
                     "name": "Order Status Inquiry",
                     "difficulty": "easy",
-                    "max_steps": 5,
+                    "max_steps": 10,
                     "description": "Customer asks about the status of order ORD-1042",
                     "has_grader": True,
-                    "grader": {"type": "function", "module": "env.graders.grader_1", "function": "grader_1"},
+                    "grader": {"type": "llm", "prompt_template": "Score the customer support performance 0.0 to 1.0"},
                 },
                 {
-                    "id": "medium",
+                    "id": "task_2",
                     "name": "Refund Request",
                     "difficulty": "medium",
-                    "max_steps": 8,
+                    "max_steps": 15,
                     "description": "Customer wants a refund for damaged item on order ORD-2087",
                     "has_grader": True,
-                    "grader": {"type": "function", "module": "env.graders.grader_2", "function": "grader_2"},
+                    "grader": {"type": "llm", "prompt_template": "Score the customer support performance 0.0 to 1.0"},
                 },
                 {
-                    "id": "hard",
+                    "id": "task_3",
                     "name": "Complex Multi-Issue Resolution",
                     "difficulty": "hard",
-                    "max_steps": 12,
+                    "max_steps": 20,
                     "description": "Wrong item in ORD-3021 and billing overcharge on ORD-3022",
                     "has_grader": True,
-                    "grader": {"type": "function", "module": "env.graders.grader_3", "function": "grader_3"},
+                    "grader": {"type": "llm", "prompt_template": "Score the customer support performance 0.0 to 1.0"},
                 },
             ]
         }
@@ -100,7 +100,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
             "name": "support_ticket_env",
             "description": "OpenEnv-compatible RL environment simulating an e-commerce customer support desk.",
             "version": "0.1.0",
-            "tasks": ["easy", "medium", "hard"],
+            "tasks": ["task_1", "task_2", "task_3"],
         }
 
     @app.get("/schema")
@@ -121,7 +121,7 @@ def create_app(task_id: str | None = None) -> FastAPI:
 
     @app.post("/reset")
     async def reset(request: ResetRequest = ResetRequest()) -> dict[str, Any]:
-        # Map openenv.yaml task IDs (task_1/2/3) to runtime IDs (easy/medium/hard)
+        # Map task_1/2/3 to runtime IDs easy/medium/hard, accept both formats
         _task_id_map = {"task_1": "easy", "task_2": "medium", "task_3": "hard"}
         task_id = request.task_id
         if task_id in _task_id_map:

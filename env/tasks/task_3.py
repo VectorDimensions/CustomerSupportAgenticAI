@@ -2,7 +2,7 @@
 
 def task_3():
     return {
-        "id": "hard",
+        "id": "task_3",
         "name": "Complex Multi-Issue Resolution",
         "difficulty": "hard",
         "max_steps": 12,

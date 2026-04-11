@@ -2,7 +2,7 @@
 
 def task_2():
     return {
-        "id": "medium",
+        "id": "task_2",
         "name": "Refund Request",
         "difficulty": "medium",
         "max_steps": 8,

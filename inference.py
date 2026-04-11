@@ -49,16 +49,11 @@ API_BASE_URL: str = os.environ.get("API_BASE_URL", "https://router.huggingface.c
 MODEL_NAME: str = os.environ.get("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 HF_TOKEN: str = os.environ.get("HF_TOKEN", "")
 IMAGE_NAME: str = os.environ.get("IMAGE_NAME", "")
-TASK_NAME: str = os.environ.get("SUPPORT_TICKET_TASK", "easy")
+TASK_NAME: str = os.environ.get("SUPPORT_TICKET_TASK", "task_1")
 ENV_BASE_URL: str = os.environ.get("ENV_BASE_URL", "http://localhost:7860")
 
-# Amendment 3: align score computation with the sample script's pattern.
-# MAX_TOTAL_REWARD is the theoretical ceiling if every step earned the highest
-# positive reward (+0.25 correct resolution). We use it to normalise the raw
-# reward sum into [0, 1] as a fallback when the grader score isn't available.
-# Per-task step budgets: easy=5, medium=8, hard=12.
 _MAX_REWARD_PER_STEP: float = 0.25
-_MAX_STEPS_BY_TASK: dict[str, int] = {"easy": 5, "medium": 8, "hard": 12}
+_MAX_STEPS_BY_TASK: dict[str, int] = {"task_1": 10, "task_2": 15, "task_3": 20, "easy": 5, "medium": 8, "hard": 12}
 MAX_TOTAL_REWARD: float = _MAX_REWARD_PER_STEP * _MAX_STEPS_BY_TASK.get(TASK_NAME, 12)
 
 # The system prompt is the most important part of the inference script.
