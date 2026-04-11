@@ -25,9 +25,8 @@ tasks:
     description: Order status inquiry for ORD-1042. Agent must look up the order and respond with status and delivery info.
     max_steps: 5
     grader:
-      type: function
-      module: env.graders.grader_1
-      function: grader_1
+      type: llm
+      prompt_template: "You are evaluating a customer support agent. The agent was asked to resolve an order status inquiry for order ORD-1042. Review the agent's actions and response. Score the agent's performance from 0.0 to 1.0, where 1.0 means the agent looked up the order and provided accurate status and delivery information, and 0.0 means the agent failed to resolve the inquiry. Return only a float between 0.0 and 1.0."
 
   - id: medium
     name: medium
@@ -35,9 +34,8 @@ tasks:
     description: Refund request for damaged item on ORD-2087. Agent must verify order, check policy, issue correct refund.
     max_steps: 8
     grader:
-      type: function
-      module: env.graders.grader_2
-      function: grader_2
+      type: llm
+      prompt_template: "You are evaluating a customer support agent. The agent was asked to process a refund for a damaged item on order ORD-2087 worth $149.99. Review the agent's actions and response. Score the agent's performance from 0.0 to 1.0, where 1.0 means the agent verified the order, checked refund policy, issued the correct refund amount, and sent a professional response, and 0.0 means the agent failed to resolve the request. Return only a float between 0.0 and 1.0."
 
   - id: hard
     name: hard
@@ -45,6 +43,5 @@ tasks:
     description: Two issues - wrong item in ORD-3021 and billing overcharge on ORD-3022. Agent must resolve both.
     max_steps: 12
     grader:
-      type: function
-      module: env.graders.grader_3
-      function: grader_3
+      type: llm
+      prompt_template: "You are evaluating a customer support agent. The agent was asked to resolve two issues: a wrong item received in order ORD-3021 and a $15 billing overcharge on order ORD-3022. Score the agent's performance from 0.0 to 1.0, where 1.0 means the agent resolved both issues (attempted replacement and issued $15 refund) and sent a unified response, and 0.0 means the agent failed to address either issue. Return only a float between 0.0 and 1.0."
