@@ -18,3 +18,21 @@ def grader_1(action_history_or_result: Any = None, context: dict | None = None) 
         return max(0.01, min(0.99, raw))
     except Exception:
         return 0.05
+
+
+class Task1Grader:
+    """Class-based grader for task_1 (easy) — required by openenv.yaml grader path format."""
+
+    def grade(self, env: Any = None, *args: Any, **kwargs: Any) -> float:
+        """Grade the easy task. Returns float in (0.01, 0.99)."""
+        try:
+            from server.graders import grade_easy
+            action_history = kwargs.get("action_history", [])
+            context = kwargs.get("context", {})
+            if env is not None and hasattr(env, "_action_history"):
+                action_history = env._action_history
+                context = getattr(env, "_context", {})
+            raw = grade_easy(action_history, context)
+            return max(0.01, min(0.99, raw))
+        except Exception:
+            return 0.5
